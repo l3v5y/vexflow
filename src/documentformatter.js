@@ -644,8 +644,7 @@ Vex.Flow.DocumentFormatter.Liquid.prototype.draw = function(elem, options) {
     this.canvases = [];
   }
 
-  // var canvasWidth = $(elem).width() - 10; // TODO: can we use jQuery?
-	var canvasWidth = this.document.getNumberOfMeasures()*200+10;
+  var canvasWidth = $(elem).width() - 10;
   var renderWidth = Math.floor(canvasWidth / this.zoom);
   // Invalidate all blocks/staves/voices
   this.minMeasureWidths = []; // heights don't change with stave modifiers
