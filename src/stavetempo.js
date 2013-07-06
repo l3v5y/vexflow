@@ -105,7 +105,7 @@ Vex.Flow.StaveTempo.prototype.draw = function(stave, shift_x) {
     for (var i = 0; i < dots; i++) {
       x += 6 * scale;
       ctx.beginPath();
-      ctx.arc(x, y + 2 * scale, 2 * scale, 0, Math.PI * 2, false);
+      ctx.arc(x, y + 2 * scale, 2 * scale, 0, 6.283185, false);
       ctx.fill();
     }
 

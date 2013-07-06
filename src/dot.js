@@ -43,6 +43,6 @@ Vex.Flow.Dot.prototype.draw = function() {
   var ctx = this.context;
 
   ctx.beginPath();
-  ctx.arc(dot_x, dot_y, this.radius, 0, Math.PI * 2, false);
+  ctx.arc(dot_x, dot_y, this.radius, 0, 6.283185, false);
   ctx.fill();
 }

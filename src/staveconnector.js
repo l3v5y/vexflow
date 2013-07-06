@@ -12,7 +12,10 @@ Vex.Flow.StaveConnector = function(top_stave, bottom_stave) {
   SINGLE: 1,
   DOUBLE: 2,
   BRACE: 3,
-  BRACKET: 4
+  BRACKET: 4,
+	SINGLE_END: 5,
+	REPEAT_BEGIN: 6,
+	REPEAT_END: 7
 };
 Vex.Flow.StaveConnector.prototype.init = function(top_stave, bottom_stave) {
   this.width = 3;
@@ -28,7 +31,7 @@ Vex.Flow.StaveConnector.prototype.setContext = function(ctx) {
 
 Vex.Flow.StaveConnector.prototype.setType = function(type) {
   if (type >= Vex.Flow.StaveConnector.type.SINGLE &&
-      type <= Vex.Flow.StaveConnector.type.BRACKET)
+      type <= Vex.Flow.StaveConnector.type.REPEAT_END)
     this.type = type;
   return this;
 }
@@ -44,6 +47,10 @@ Vex.Flow.StaveConnector.prototype.draw = function() {
   switch (this.type) {
     case Vex.Flow.StaveConnector.type.SINGLE:
       width = 1;
+      break;
+    case Vex.Flow.StaveConnector.type.SINGLE_END:
+      width = 1;
+			topX += this.top_stave.width;
       break;
     case Vex.Flow.StaveConnector.type.DOUBLE:
       topX -= (this.width + 2);
@@ -90,6 +97,16 @@ Vex.Flow.StaveConnector.prototype.draw = function() {
       Vex.Flow.renderGlyph(this.ctx, topX - 5, botY + 3, 40, "v10", true);
       topX -= (this.width + 2);
       break;
+    case Vex.Flow.StaveConnector.type.REPEAT_BEGIN:
+			this.ctx.fillRect(topX + 3, topY, 1, attachment_height);
+			topX -= 2;
+			attachment_height += 1;
+			break;
+    case Vex.Flow.StaveConnector.type.REPEAT_END:
+			this.ctx.fillRect(topX - 5 +this.top_stave.width, topY, 1, attachment_height);
+			topX += this.top_stave.width-2;
+			topY += 1;
+			break;
   }
   
   if (this.type != Vex.Flow.StaveConnector.type.BRACE) {

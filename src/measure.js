@@ -112,6 +112,8 @@ Vex.Flow.Measure.Part = function(object) {
     this.options.time_signature = object.time_signature;
   if (typeof object.options == "object")
     Vex.Merge(this.options, object.options);
+	if (typeof object.bars == "object") 
+		this.bars = object.bars;
 
   if (typeof object.getVoices == "function") this.voices = object.getVoices();
   else if (object.voices instanceof Array) {
@@ -303,8 +305,9 @@ Vex.Flow.Measure.Stave = function(object) {
   this.key = (typeof object.key == "string") ? object.key : null;
   this.modifiers = new Array();
   if (object.modifiers instanceof Array) {
-    for (var i = 0; i < object.modifiers.length; i++)
+    for (var i = 0; i < object.modifiers.length; i++) {
       this.addModifier(object.modifiers[i]);
+		}
   }
 
   this.type = "stave";
@@ -414,6 +417,7 @@ Vex.Flow.Measure.Note = function(object) {
   // Note: accidentals set by voice if this.accidentals == null
   //       no accidentals           if this.accidentals == [null, ...]
   this.duration = object.duration;
+	this.tieNumber = object.tieNumber;
   this.rest = !!(object.rest); // force true or false
   this.intrinsicTicks = (object.intrinsicTicks > 0)
                       ? object.intrinsicTicks : null;
@@ -436,8 +440,12 @@ Vex.Flow.Measure.Note = function(object) {
   this.lyric = (typeof object.lyric == "object" && object.lyric)
              ? {text: object.lyric.text}
              : null;
+	this.articulations = object.articulations
 
   this.type = "note";
+
+	// OWN
+	// this.stave = object.stave;
 }
 
 /* Standardize a key string, returning the result */

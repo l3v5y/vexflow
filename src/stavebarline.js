@@ -118,15 +118,14 @@ Vex.Flow.Barline.prototype.drawRepeatBar = function(stave, x, begin) {
              (stave.options.spacing_between_lines_px / 2);
   var dot_y = top_line + y_offset + (dot_radius / 2);
 
-  // draw the top repeat dot
   stave.context.beginPath();
-  stave.context.arc(dot_x, dot_y, dot_radius, 0, Math.PI * 2, false);
+  stave.context.arc(dot_x, dot_y, dot_radius, 0, 6.283185 , false);
   stave.context.fill();
 
   //draw the bottom repeat dot
   dot_y += stave.options.spacing_between_lines_px;
   stave.context.beginPath();
-  stave.context.arc(dot_x, dot_y, dot_radius, 0, Math.PI * 2, false);
+  stave.context.arc(dot_x, dot_y, dot_radius, 0, 6.283185, false);
   stave.context.fill();
 
 }

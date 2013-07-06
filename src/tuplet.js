@@ -218,12 +218,12 @@ Vex.Flow.Tuplet.prototype.draw = function() {
     var colon_radius = this.point * 0.06;
     this.context.beginPath();
     this.context.arc(colon_x, this.y_pos - this.point*0.08,
-                     colon_radius, 0, Math.PI*2, true);
+                     colon_radius, 0, 6.283185, true);
     this.context.closePath();
     this.context.fill();
     this.context.beginPath();
     this.context.arc(colon_x, this.y_pos + this.point*0.12,
-                     colon_radius, 0, Math.PI*2, true);
+                     colon_radius, 0, 6.283185, true);
     this.context.closePath();
     this.context.fill();
     x_offset += this.point*0.32;

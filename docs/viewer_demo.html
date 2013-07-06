@@ -8,7 +8,7 @@
   <meta name="viewport" content="initial-scale = 1.0, minimum-scale = 1.0, maximum-scale = 1.0, user-scalable = no">
 
   <!-- VexFlow Compiled Source -->
-  <script src="../support/vexflow-min.js"></script>
+  <script src="../build/vexflow/vexflow-min.js"></script>
 
   <!-- Support Sources -->
   <script src="../support/jquery.js"></script>
@@ -42,37 +42,32 @@
     $(document).ready(function() {
       var req = new XMLHttpRequest();
       var uri = getParameter('doc');
-      if (! uri) uri = 'bach_bwv846p.xml';
+      if (! uri) uri = 'dr.xml';
       var loadStart = new Date().getTime(); // time load
       req.open('GET', "samples/" + uri, true);
       req.onreadystatechange = function() {
         if (req.readyState != 4) return;
         var loadElapsed = (new Date().getTime() - loadStart)/1000;
+
         if (typeof console != "undefined" && typeof console.log == "function")
           console.log("Time to load document: " + loadElapsed.toString());
         var start = new Date().getTime(); // time execution
         try {
-          VexDocument = new Vex.Flow.Document(req.responseText);
+
+
+					VexDocument = new Vex.Flow.Document(req.responseText);
+
+
         }
         catch (e) {
           $(".content")[0].innerHTML = "There was an error with the document.";
         }
         var content = $(".content")[0];
+
         if (VexDocument) {
           VexFormatter = VexDocument.getFormatter();
           VexFormatter.draw(content);
         }
-        var elapsed = (new Date().getTime() - start)/1000;
-        if (typeof console != "undefined" && typeof console.log == "function")
-          console.log("Time to display document: " + elapsed.toString());
-        var debouncedResize = null;
-        $(window).resize(function() {
-          if (! debouncedResize)
-            debouncedResize = setTimeout(function() {
-              VexFormatter.draw(content);
-              debouncedResize = null;
-            }, 500);
-        });
       };
       req.send(null);
     });

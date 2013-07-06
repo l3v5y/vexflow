@@ -110,7 +110,7 @@ Vex.Flow.Document.prototype.init = function(data, options) {
         throw new Vex.RERR("ParseError", "Could not parse document data");
     }
   }
-  if (! this.backend)
+  if (! this.backend )
     throw new Vex.RERR("ParseError", "Data in document is not supported");
 
   this.type = "document";

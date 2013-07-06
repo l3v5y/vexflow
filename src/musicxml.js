@@ -65,23 +65,31 @@ Vex.Flow.Backend.MusicXML.prototype.parse = function(data) {
     if (node.nodeName == "part-list") this.parsePartList(node);
     else if (node.nodeName == "part") {
       var measureNum = 0;
+
+			// for every mesure
       for (var j = 0; j < node.childNodes.length; j++) {
-        var measure = node.childNodes[j];
-        if (measure.nodeName != "measure") continue;
-        if (! (measureNum in this.measures))
+        var measure = node.childNodes[j]; // the current mesure
+
+        if (measure.nodeName != "measure") continue; // if not mesure, continue
+
+        if (! (measureNum in this.measures)) // add a new entry in the mesure array
           this.measures[measureNum] = new Array();
+
         if (this.measures[measureNum].length != partNum) {
           // Some part is missing a measure
           Vex.LogFatal("Part missing measure");
           this.valid = false;
           return;
         }
+
         if (! (measureNum in this.measureNumbers)) {
           var num = parseInt(measure.getAttribute("number"));
           if (! isNaN(num)) this.measureNumbers[measureNum] = num;
         }
+
         this.measures[measureNum][partNum] = measure;
         var attributes = measure.getElementsByTagName("attributes")[0];
+				// console.log('found');
         if (attributes) this.parseAttributes(measureNum, partNum, attributes);
         measureNum++;
       }
@@ -170,11 +178,37 @@ Vex.Flow.Backend.MusicXML.prototype.getMeasure = function(m) {
     if (typeof attrs.key  == "string") partOptions.key  = attrs.key;
     measure.setPart(p, partOptions);
     var part = measure.getPart(p);
-    part.setNumberOfStaves(this.numStaves[p]);
+		part.setNumberOfStaves(this.numStaves[p]);
     if (attrs.clef instanceof Array)
       for (var s = 0; s < this.numStaves[p]; s++)
         part.setStave(s, {clef: attrs.clef[s]});
     var numVoices = 1; // can expand dynamically
+		var barlines = this.measures[m][p].getElementsByTagName("barline");
+		// BARLINES
+		if(barlines.length > 0) {
+		
+			var bars = {};
+			for(var b=0; b<barlines.length; b++){
+				
+				var bar = barlines[b];
+				var barObj = {};
+				
+				if(bar.getAttribute("location")) barObj.location = bar.getAttribute("location");
+				Array.prototype.forEach.call(bar.childNodes,function(node){
+					switch(node.nodeName){
+						case "bar-style":
+							barObj.barStyle = node.textContent;
+						break;
+						case "repeat":
+							barObj.direction = node.getAttribute("direction");
+						break;
+					}
+				});
+
+			}
+
+			part.bars = barObj;
+		}
     var noteElems = this.measures[m][p].getElementsByTagName("note");
     var voiceObjects = new Array(); // array of arrays
     var lastNote = null; // Hold on to last note in case there is a chord
@@ -182,12 +216,15 @@ Vex.Flow.Backend.MusicXML.prototype.getMeasure = function(m) {
       // FIXME: Chord support
       var noteObj = this.parseNote(noteElems[i], attrs);
       if (noteObj.grace) continue; // grace note requires VexFlow support
+
       var voiceNum = 0;
       if (typeof noteObj.voice == "number") {
-        if (noteObj.voice >=numVoices) part.setNumberOfVoices(noteObj.voice+1);
-        voiceNum = noteObj.voice;
+				voiceNum = noteObj.voice;
+        if (noteObj.voice >= numVoices) part.setNumberOfVoices(noteObj.voice+1);
+        numVoices = noteObj.voice+1;
       }
       var voice = part.getVoice(voiceNum);
+
       if (voice.notes.length == 0 && typeof noteObj.stave == "number") {
         // TODO: voice spanning multiple staves (requires VexFlow support)
         voice.stave = noteObj.stave;
@@ -203,6 +240,7 @@ Vex.Flow.Backend.MusicXML.prototype.getMeasure = function(m) {
     // Copy part and number voices correctly
     // FIXME: Figure out why this happens
     var newPart = new Vex.Flow.Measure.Part(part);
+		
     var v = 0; // Correct voice number
     for (var i = 0; i < part.getNumberOfVoices(); i++)
       if (typeof part.getVoice(i) == "object"
@@ -243,7 +281,7 @@ Vex.Flow.Backend.MusicXML.prototype.parseAttributes =
                                       .textContent),
           beat_value: parseInt(attr.getElementsByTagName(
                                           "beat-type")[0].textContent),
-          soft: true // XXX: Should we always have soft voices?
+          soft: true// XXX: Should we always have soft voices?
         };
         break;
       case "clef":
@@ -356,7 +394,11 @@ Vex.Flow.Backend.MusicXML.prototype.parseNote = function(noteElem, attrs) {
         break;
       case "staff":
         var stave = parseInt(elem.textContent);
-        if (! isNaN(stave) && stave > 0) noteObj.stave = stave - 1;
+        if (! isNaN(stave) && stave > 0) {
+					// HACK
+					// noteObj.voice = stave;
+					noteObj.stave = stave - 1;
+				}
         break;
       case "stem":
         if (elem.textContent == "up") noteObj.stem_direction = 1;
@@ -383,13 +425,31 @@ Vex.Flow.Backend.MusicXML.prototype.parseNote = function(noteElem, attrs) {
               switch (tie) {
                 case "start":
                   noteObj.tie = (noteObj.tie == "end") ? "continue" : "begin";
+									noteObj.tieNumber = noteObj.keys;
                   break;
                 case "stop":
                   noteObj.tie = (noteObj.tie == "begin") ? "continue" : "end";
+									noteObj.tieNumber = noteObj.keys;
                   break;
                 default: Vex.RERR("BadMusicXML", "Bad tie: " + tie.toString());
               }
               break;
+						case "articulations":
+							Array.prototype.forEach.call(notationElem.childNodes,function(articulationElem){
+								switch(articulationElem.nodeName){
+									case "staccato":
+										if( !noteObj.articulations ){noteObj.articulations = {};}
+										noteObj.articulations.staccato = true;
+									break;
+									default: 
+										if(articulationElem.nodeName != "#text") console.log("Unhandeled articulation element:"+articulationElem.nodeName,articulationElem);
+									break;
+								}
+							});
+						break;
+						default: // Untracked cases
+							if(notationElem.nodeName != "#text") console.log("Untracked Case:" + notationElem.nodeName, notationElem);
+							break;
             // TODO: tuplet
           }
         });
@@ -407,6 +467,9 @@ Vex.Flow.Backend.MusicXML.prototype.parseNote = function(noteElem, attrs) {
       case "treble": default: noteObj.keys = ["B/4"]; break;
     }
   }
+
+	// console.log(noteObj.keys[0]+" "+noteObj.stave+" "+noteObj.voice+" "+noteObj.rest,noteObj.duration);
+
   return noteObj;
 }
 

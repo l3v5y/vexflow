@@ -124,7 +124,7 @@ Vex.Flow.StringNumber.prototype.draw = function() {
 
   ctx.save();
   ctx.beginPath();
-  ctx.arc(dot_x, dot_y, this.radius, 0, Math.PI * 2, false);
+  ctx.arc(dot_x, dot_y, this.radius, 0, 6.283185, false);
   ctx.lineWidth = 1.5;
   ctx.stroke();
   ctx.setFont(this.font.family, this.font.size, this.font.weight);

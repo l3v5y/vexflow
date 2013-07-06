@@ -9,6 +9,8 @@ Vex.Flow.Test.StaveConnector.Start = function() {
   module("StaveConnector");
   Vex.Flow.Test.runTest("StaveConnector Single Draw Test (Canvas)", 
     Vex.Flow.Test.StaveConnector.drawSingle);  
+  Vex.Flow.Test.runTest("StaveConnector Repeat Connection Draw Test (Canvas)", 
+    Vex.Flow.Test.StaveConnector.drawRepeat);  
   Vex.Flow.Test.runRaphaelTest("StaveConnector Single Draw Test (Raphael)",
     Vex.Flow.Test.StaveConnector.drawSingle);
   Vex.Flow.Test.runTest("StaveConnector Double Draw Test (Canvas)", 
@@ -39,12 +41,50 @@ Vex.Flow.Test.StaveConnector.drawSingle = function(options, contextBuilder) {
   var stave2 = new Vex.Flow.Stave(25, 120, 300);  
   stave.setContext(ctx);
   stave2.setContext(ctx);
+
   var connector = new Vex.Flow.StaveConnector(stave, stave2);
   connector.setType(Vex.Flow.StaveConnector.type.SINGLE);
   connector.setContext(ctx);
+
+  var connector2 = new Vex.Flow.StaveConnector(stave, stave2);
+  connector2.setType(Vex.Flow.StaveConnector.type.SINGLE_END);
+  connector2.setContext(ctx);
+
   stave.draw();
   stave2.draw();
   connector.draw();  
+  connector2.draw();  
+
+  ok(true, "all pass");
+}
+
+Vex.Flow.Test.StaveConnector.drawRepeat = function(options, contextBuilder) {
+  var ctx = new contextBuilder(options.canvas_sel, 400, 300);
+  var stave = new Vex.Flow.Stave(25, 10, 300);
+  var stave2 = new Vex.Flow.Stave(25, 120, 300);  
+
+	var dummy1 = new Vex.Flow.Stave(stave.x + stave.width,
+		stave.y, 100);
+	var dummy2 = new Vex.Flow.Stave(stave2.x + stave2.width,
+		stave2.y, 100);
+
+  stave.setContext(ctx);
+  stave2.setContext(ctx);
+
+
+  var connector = new Vex.Flow.StaveConnector(stave, stave2);
+  var connector2 = new Vex.Flow.StaveConnector(stave, stave2);
+
+  connector.setType(Vex.Flow.StaveConnector.type.REPEAT_BEGIN);
+  connector2.setType(Vex.Flow.StaveConnector.type.REPEAT_END);
+
+  connector.setContext(ctx);
+  connector2.setContext(ctx);
+  stave.draw();
+  stave2.draw();
+
+  connector.draw();  
+  connector2.draw();  
 
   ok(true, "all pass");
 }
