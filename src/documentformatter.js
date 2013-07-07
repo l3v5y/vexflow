@@ -352,18 +352,137 @@ Vex.Flow.DocumentFormatter.prototype.drawPart =
   var voices = part.getVoices();
 	// OWN: letztendlich hier bars anhängen
 
-  vfStaves.forEach(function(stave) { 
-		// if(typeof part.bars == "object") {
-		// 	if(part.bars.location == "right" && part.bars.direction == "backward") {
-		// 		stave.setEndBarType(Vex.Flow.Barline.type.REPEAT_END);
-		// 	}
-		// 	if(part.bars.location == "left" && part.bars.direction == "forward") {
-		// 		stave.setBegBarType(Vex.Flow.Barline.type.REPEAT_BEGIN);
-		// 	}
-		// }
-		stave.setEndBarType(Vex.Flow.Barline.type.REPEAT_END);
-		stave.setBegBarType(Vex.Flow.Barline.type.REPEAT_BEGIN);
-		stave.setContext(context).draw(); 
+  vfStaves.forEach(function(stave) {
+    if(typeof part.bars == "object") {
+      switch(part.bars.barStyle)
+      {
+        case "light-heavy":
+          if(part.bars.location == "right" && part.bars.repeatDirection == "backward")
+          {
+            stave.setEndBarType(Vex.Flow.Barline.type.REPEAT_END);
+          }
+          else if(part.bars.location == "left")
+          {
+            stave.setBegBarType(Vex.Flow.Barline.type.DOUBLE_LH);
+          }
+          else
+          {
+           stave.setEndBarType(Vex.Flow.Barline.type.DOUBLE_LH);
+          }
+          break;
+        case "heavy-light":
+          if(part.bars.location == "left" && part.bars.repeatDirection == "forward")
+          {
+            stave.setBegBarType(Vex.Flow.Barline.type.REPEAT_BEGIN);
+          }
+          else if(part.bars.location == "left")
+          {
+            stave.setBegBarType(Vex.Flow.Barline.type.DOUBLE_HL);
+          }
+          else
+          {
+           stave.setEndBarType(Vex.Flow.Barline.type.DOUBLE_HL);
+          }
+          break;
+
+        case "dotted":
+        if(part.bars.location == "left")
+          {
+            stave.setBegBarType(Vex.Flow.Barline.type.DOTTED);
+          }
+          else
+          {
+            stave.setEndBarType(Vex.Flow.Barline.type.DOTTED);
+          }
+          break;
+        case "dashed":
+        if(part.bars.location == "left")
+          {
+            stave.setBegBarType(Vex.Flow.Barline.type.DASHED);
+          }
+          else
+          {
+            stave.setEndBarType(Vex.Flow.Barline.type.DASHED);
+          }
+          break;
+        case "heavy":
+        if(part.bars.location == "left")
+          {
+            stave.setBegBarType(Vex.Flow.Barline.type.HEAVY);
+          }
+          else
+          {
+            stave.setEndBarType(Vex.Flow.Barline.type.HEAVY);
+          }
+          break;
+        case "tick":
+        if(part.bars.location == "left")
+          {
+            stave.setBegBarType(Vex.Flow.Barline.type.TICK);
+          }
+          else
+          {
+            stave.setEndBarType(Vex.Flow.Barline.type.TICK);
+          }
+          break;
+        case "short":
+        if(part.bars.location == "left")
+          {
+            stave.setBegBarType(Vex.Flow.Barline.type.SHORT);
+          }
+          else
+          {
+            stave.setEndBarType(Vex.Flow.Barline.type.SHORT);
+          }
+          break;
+        case "none":
+          if(part.bars.location == "left")
+          {
+            stave.setBegBarType(Vex.Flow.Barline.type.NONE);
+          }
+          else
+          {
+            stave.setEndBarType(Vex.Flow.Barline.type.NONE);
+          }
+          break;
+
+
+        case "light-light":
+        if(part.bars.location == "left")
+          {
+            stave.setBegBarType(Vex.Flow.Barline.type.DOUBLE_L);
+          }
+          else
+          {
+            stave.setEndBarType(Vex.Flow.Barline.type.DOUBLE_L);
+          }
+          break;
+        case "heavy-heavy":
+          if(part.bars.location == "left")
+          {
+            stave.setBegBarType(Vex.Flow.Barline.type.DOUBLE_H);
+          }
+          else
+          {
+            stave.setEndBarType(Vex.Flow.Barline.type.DOUBLE_H);
+          }
+          break;
+
+        case "regular":
+          if(part.bars.location == "left")
+          {
+            stave.setBegBarType(Vex.Flow.Barline.type.SINGLE);
+          }
+          else
+          {
+            stave.setEndBarType(Vex.Flow.Barline.type.SINGLE);
+          }
+          break;
+        default:
+          break;
+      }
+		}
+		stave.setContext(context).draw();
 	});
 
   var allVfObjects = new Array();

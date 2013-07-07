@@ -163,7 +163,7 @@ Vex.Flow.Backend.MusicXML.prototype.getNumberOfMeasures = function() {
 Vex.Flow.Backend.MusicXML.prototype.getMeasureNumber = function(m) {
   var num = this.measureNumbers[m];
   return isNaN(num) ? null : num;
-}
+};
 
 Vex.Flow.Backend.MusicXML.prototype.getMeasure = function(m) {
   var measure_attrs = this.getAttributes(m, 0);
@@ -185,29 +185,33 @@ Vex.Flow.Backend.MusicXML.prototype.getMeasure = function(m) {
     var numVoices = 1; // can expand dynamically
 		var barlines = this.measures[m][p].getElementsByTagName("barline");
 		// BARLINES
-		if(barlines.length > 0) {
-		
+		if(barlines.length > 0)
+    {
 			var bars = {};
-			for(var b=0; b<barlines.length; b++){
-				
+			for(var b=0; b<barlines.length; b++)
+      {
 				var bar = barlines[b];
 				var barObj = {};
-				
-				if(bar.getAttribute("location")) barObj.location = bar.getAttribute("location");
-				Array.prototype.forEach.call(bar.childNodes,function(node){
-					switch(node.nodeName){
-						case "bar-style":
-							barObj.barStyle = node.textContent;
-						break;
-						case "repeat":
-							barObj.direction = node.getAttribute("direction");
-						break;
-					}
-				});
-
+				if(bar.getAttribute("location"))
+        {
+          barObj.location = bar.getAttribute("location");
+        }
+				Array.prototype.forEach.call(
+          bar.childNodes,
+          function(node)
+          {
+            switch(node.nodeName)
+            {
+              case "bar-style":
+                barObj.barStyle = node.textContent;
+                break;
+              case "repeat":
+                barObj.repeatDirection = node.getAttribute("direction");
+                break;
+            }
+          });
+        part.bars = barObj;
 			}
-
-			part.bars = barObj;
 		}
     var noteElems = this.measures[m][p].getElementsByTagName("note");
     var voiceObjects = new Array(); // array of arrays
@@ -464,7 +468,7 @@ Vex.Flow.Backend.MusicXML.prototype.parseNote = function(noteElem, attrs) {
       case "bass": noteObj.keys = ["D/3"]; break;
       case "tenor": noteObj.keys = ["A/3"]; break;
       case "alto": noteObj.keys = ["C/4"]; break;
-      case "treble": default: noteObj.keys = ["B/4"]; break;
+      case "treble": default: noteObj.keys = ["D/5"]; break;
     }
   }
 

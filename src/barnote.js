@@ -28,6 +28,17 @@ Vex.Flow.BarNote.prototype.init = function() {
   this.metrics.widths[TYPE.REPEAT_BOTH] = 18;
   this.metrics.widths[TYPE.NONE] = 0;
 
+  this.metrics.widths[TYPE.DOTTED] = 8;
+  this.metrics.widths[TYPE.DASH] = 8;
+  this.metrics.widths[TYPE.HEAVY] = 10;
+  this.metrics.widths[TYPE.DOUBLE_L] = 12;
+  this.metrics.widths[TYPE.DOUBLE_LH] = 15;
+  this.metrics.widths[TYPE.DOUBLE_HL] = 15;
+  this.metrics.widths[TYPE.DOUBLE_H] = 15;
+
+  this.metrics.widths[TYPE.TICK] = 8;
+  this.metrics.widths[TYPE.SHORT] = 8;
+
   // Note properties
   this.ignore_ticks = true;
   this.type = TYPE.SINGLE;
