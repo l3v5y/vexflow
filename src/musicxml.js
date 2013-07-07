@@ -445,21 +445,93 @@ Vex.Flow.Backend.MusicXML.prototype.parseNote = function(noteElem, attrs) {
 										if( !noteObj.articulations ){noteObj.articulations = {};}
 										noteObj.articulations.staccato = true;
 									break;
-									default: 
+									default:
 										if(articulationElem.nodeName != "#text") console.log("Unhandeled articulation element:"+articulationElem.nodeName,articulationElem);
 									break;
 								}
 							});
 						break;
+            case "tuplet":
+              // Tuplets are handleded elsewhere somehow?
+              // http://l3v5y.co.uk/Music/vexml/index.html?doc=23a-Tuplets.xml
+            break;
+            case "slur":
+             // What do we do abouy slurs?
+             // TODO: SLUR
+            break;
+            case "fermata":
+              var fermata = notationElem.getAttribute("type");
+              if( !noteObj.articulations ){noteObj.articulations = {};}
+              noteObj.articulations.fermata = true;
+              switch (fermata) {
+                case "upright":
+                  noteObj.articulations.fermataUpright = true;
+                  break;
+                case "inverted":
+                default:
+                  noteObj.articulations.fermataUpright = false;
+                  break;
+              }
+              break;
+            break;
 						default: // Untracked cases
 							if(notationElem.nodeName != "#text") console.log("Untracked Case:" + notationElem.nodeName, notationElem);
 							break;
-            // TODO: tuplet
           }
         });
         break;
     }
   });
+  if(!noteObj.stem_direction && noteObj.keys)
+  {
+    var keysObject = noteObj.keys.toString();
+    var octave = parseInt(keysObject.substr(keysObject.indexOf("/") + 1));
+    var note = keysObject.substr(0,1);
+    var clef = attrs.clef;
+    if (clef instanceof Array) clef = clef[noteObj.stave];
+    switch (clef) {
+      case "bass":
+      if((octave==3 && note >= "D" )|| octave >=4)
+        {
+          noteObj.stem_direction = -1;
+        }
+        else
+        {
+          noteObj.stem_direction = 1;
+        }
+        break;
+      case "tenor":
+       if((octave==3 && (note == "A"||note == "B") )|| octave >=4)
+        {
+          noteObj.stem_direction = -1;
+        }
+        else
+        {
+          noteObj.stem_direction = 1;
+        }
+        break;
+      case "alto":
+       if(octave >=4)
+        {
+          noteObj.stem_direction = -1;
+        }
+        else
+        {
+          noteObj.stem_direction = 1;
+        }
+        break;
+      case "treble":
+        if((octave==4 && note == "B" )|| octave >=5)
+        {
+          noteObj.stem_direction = -1;
+        }
+        else
+        {
+          noteObj.stem_direction = 1;
+        }
+        break;
+    }
+  }
   // Set default rest position now that we know the stave
   if (noteObj.rest && ! noteObj.keys) {
     var clef = attrs.clef;
@@ -468,7 +540,7 @@ Vex.Flow.Backend.MusicXML.prototype.parseNote = function(noteElem, attrs) {
       case "bass": noteObj.keys = ["D/3"]; break;
       case "tenor": noteObj.keys = ["A/3"]; break;
       case "alto": noteObj.keys = ["C/4"]; break;
-      case "treble": default: noteObj.keys = ["D/5"]; break;
+      case "treble": default: noteObj.keys = ["B/4"]; break;
     }
   }
 

@@ -261,6 +261,17 @@ Vex.Flow.DocumentFormatter.prototype.getVexflowNote = function(note, options) {
 	{
 		vfNote.addArticulation(0, new Vex.Flow.Articulation("a.").setPosition(vfNote.stem_direction==1?4:3));
 	}
+  if(typeof note.articulations == "object" && note.articulations.fermata == true)
+  {
+    if(note.articulations.fermataUpright==true)
+    {
+     vfNote.addArticulation(0, new Vex.Flow.Articulation("a@a"));
+    }
+    else
+      {
+     vfNote.addArticulation(0, new Vex.Flow.Articulation("a@u"));
+    }
+  }
   return vfNote;
 }
 
