@@ -39,6 +39,7 @@ Vex.Flow.StaveNote.prototype.init = function(note_struct) {
   this.notes_displaced = false;   // if true, displace note to right
   this.dot_shiftY = 0;
   this.keyProps = [];             // per-note properties
+  this.keyStyles = [];            // per-note colors or gradients
 
   // Pull per-note location and other rendering properties.
   this.displaced = false;
@@ -74,6 +75,7 @@ Vex.Flow.StaveNote.prototype.init = function(note_struct) {
 
     last_line = line;
     this.keyProps.push(props);
+    this.keyStyles.push(null);
   }
 
   // Sort the notes from lowest line to highest line
@@ -397,6 +399,11 @@ Vex.Flow.StaveNote.prototype.getGlyph = function() {
   return this.glyph;
 }
 
+Vex.Flow.StaveNote.prototype.setKeyStyle = function(index, style) {
+  this.keyStyles[index] = style;
+  return this;
+}
+
 Vex.Flow.StaveNote.prototype.addToModifierContext = function(mc) {
   this.setModifierContext(mc);
   for (var i = 0; i < this.modifiers.length; ++i) {
@@ -573,6 +580,7 @@ Vex.Flow.StaveNote.prototype.draw = function() {
 
   for (var i = start_i; i != end_i; i += step_i) {
     var note_props = this.keyProps[i];
+    var key_style = this.keyStyles[i];
     var line = note_props.line;
     highest_line = line > highest_line ? line : highest_line;
     lowest_line = line < lowest_line ? line : lowest_line;
@@ -613,7 +621,15 @@ Vex.Flow.StaveNote.prototype.draw = function() {
 
     // Draw the head.
     if (render_head) {
-     head_x = Math.round(head_x);
+      head_x = Math.round(head_x);
+
+      ctx.save();
+
+      if (key_style) {
+        if (key_style.shadowColor) ctx.setShadowColor(key_style.shadowColor);
+        if (key_style.shadowBlur) ctx.setShadowBlur(key_style.shadowBlur);
+        if (key_style.fillStyle) ctx.setFillStyle(key_style.fillStyle);
+      }
 
       // if a slash note, draw 'manually' as font glyphs do not slant enough
       // and are too small.
@@ -622,6 +638,21 @@ Vex.Flow.StaveNote.prototype.draw = function() {
       } else {
         Vex.Flow.renderGlyph(ctx, head_x,
             y, this.render_options.glyph_font_scale, code_head);
+      }
+      ctx.restore();
+
+      // If note above/below the staff, draw the small staff
+      if (line <= 0 || line >= 6) {
+        var line_y = y;
+        var floor = Math.floor(line);
+        if (line < 0 && floor - line == -0.5)
+          line_y -= 5;
+        else if (line > 6 &&  floor - line == -0.5)
+          line_y += 5;
+        ctx.fillRect(
+          head_x - this.render_options.stroke_px, line_y,
+          ((head_x + glyph.head_width) - head_x) +
+          (this.render_options.stroke_px * 2), 1);
       }
     }
   }

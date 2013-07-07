@@ -67,6 +67,14 @@ Vex.Flow.Renderer.bolsterCanvasContext = function(ctx) {
     this.strokeStyle = style;
     return this;
   }
+  ctx.setShadowColor = function(style) {
+    this.shadowColor = style;
+    return this;
+  }
+  ctx.setShadowBlur = function(blur) {
+    this.shadowBlur = blur;
+    return this;
+  }
   return ctx;
 }
 
@@ -77,7 +85,7 @@ Vex.Flow.Renderer.prototype.init = function(sel, backend) {
       "Invalid selector for renderer.");
 
   // Get element from selector
-  this.element = document.getElementById(sel);
+  this.element = Vex.document.getElementById(sel);
   if (!this.element) this.element = sel;
 
   // Verify backend and create context

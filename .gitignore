@@ -18,5 +18,7 @@ ruby_sess.*
 .idea/vcs.xml
 .idea/workspace.xml
 build/
-
 .sconsign.dblite
+node_modules
+npm-debug.log
+tests/output
