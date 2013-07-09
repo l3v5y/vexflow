@@ -48,7 +48,7 @@ For performing full builds, you need the following:
 
 Build with:
 
-    $ scons
+    $ build.sh
 
 Clean with:
 
